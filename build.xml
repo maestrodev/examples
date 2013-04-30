@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
-<project name="app_test" basedir="." default="all">
+<project name="app_test" basedir="." default="all" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+    <!-- Maven Ant tasks for deployment -->
+    <path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.1.3.jar" />
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+        uri="antlib:org.apache.maven.artifact.ant"
+        classpathref="maven-ant-tasks.classpath" />
+
+    <property name="altDeploymentRepository" value="http://localhost:8082/archiva/repository/snapshots"/>
+
     <target name="init">
         <property name="appName" value="app_test"/>
     
@@ -51,6 +60,22 @@
                 <include name="${appName}.jar"/>
             </lib>
         </war>
+    </target>
+
+    <!-- Install and deploy to Maven repo -->
+    <artifact:pom id="mypom" file="pom.xml" />
+
+    <target name="install" depends="war">
+        <artifact:install file="dist/app_test.war">
+            <pom refid="mypom"/>
+        </artifact:install>
+    </target>
+
+    <target name="deploy" depends="install">
+        <artifact:deploy file="dist/app_test.war">
+            <remoteRepository url="${altDeploymentRepository}"/>
+            <pom refid="mypom"/>
+        </artifact:deploy>
     </target>
 
     <target name="all" depends="war, clean" description="Build everything.">
