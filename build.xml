@@ -73,7 +73,7 @@
 
     <target name="deploy" depends="install">
         <artifact:deploy file="dist/app_test.war">
-            <remoteRepository url="${altDeploymentRepository}"/>
+            <remoteRepository id="maestro-deploy" url="${altDeploymentRepository}"/>
             <pom refid="mypom"/>
         </artifact:deploy>
     </target>
